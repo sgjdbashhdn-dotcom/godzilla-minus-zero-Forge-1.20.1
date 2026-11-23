@@ -21,9 +21,17 @@ jobs:
         with:
           gradle-version: '8.8'
 
-      - run: gradle build
+      - name: Extract ZIP
+        run: |
+          mkdir extracted
+          unzip -q *.zip -d extracted
+          PROJECT_DIR=$(dirname "$(find extracted -name build.gradle -print -quit)")
+          echo "PROJECT_DIR=$PROJECT_DIR" >> $GITHUB_ENV
+
+      - name: Build mod
+        run: gradle -p "$PROJECT_DIR" build
 
       - uses: actions/upload-artifact@v4
         with:
           name: Godzilla-Mod-JAR
-          path: build/libs/*.jar
+          path: extracted/**/build/libs/*.jar
